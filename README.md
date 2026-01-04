@@ -116,6 +116,13 @@ This aspect is critical for real-world intrusion detection systems.
 - Dataset is simulated and may not fully represent real network conditions
 - No cost-sensitive or probabilistic calibration applied
 
+✅ Why this project matters
+This project demonstrates:
+a structured ML workflow
+awareness of real-world security constraints
+careful evaluation beyond raw accuracy
+the ability to reason about model trade-offs in intrusion detection
+
 ---
 
 ## 🔮 Possible Improvements
@@ -137,17 +144,3 @@ This aspect is critical for real-world intrusion detection systems.
 ├── images/
 ├── requirements.txt
 └── README.md
-
-## 🧑‍💻 Author
-
-Thierry Armel Tchomo Kombou
-Machine Learning & Cybersecurity Student
-Interests: Intrusion Detection, ML for Security, Network Traffic Analysis
-
-## ✅ Why this project matters
-
-This project demonstrates:
-a structured ML workflow
-awareness of real-world security constraints
-careful evaluation beyond raw accuracy
-the ability to reason about model trade-offs in intrusion detection
