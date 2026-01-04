@@ -16,7 +16,7 @@ Machine Learning system for detecting DDoS attacks achieving **99.95% accuracy**
 - [Tech Stack](#️-tech-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
-- [Results & Analysis](#-results--analysis)
+- [Visualizations](#-Visualizations)
 - [Academic Context](#-academic-context)
 - [License](#-license)
 - [Contact](#-contact)
@@ -249,49 +249,109 @@ jupyter notebook notebooks/main.ipynb
   - AdaBoost: ~3 minutes
 - Total: ~20-25 minutes
 
-## 📈 Results & Analysis
+## 📊 Visualizations
 
-### Confusion Matrix - AdaBoost (Best Model)
-```
-                    Predicted
-                 Benign    DDoS
-Actual  Benign    [TN]     [FP]
-        DDoS      [FN]     [TP]
+### Class Distribution
 
-True Positives (TP):  99,996 (99.96%)
-False Negatives (FN):      4 (0.04%)
-True Negatives (TN):  10,395 (99.99%)
-False Positives (FP):      4 (0.01%)
-```
+The dataset exhibits severe class imbalance, with DDoS attacks representing 90% of the training data:
 
-### Key Findings
+![Target Distribution](images/figures/target_distribution.png)
 
-1. **Threshold Tuning is Critical**
-   - Random Forest improved from 74% to 99.3% accuracy with threshold optimization
-   - Small adjustment (0.5 → 0.1) had massive impact on recall
+### Feature Correlation Analysis
 
-2. **PCA Essential for KNN**
-   - Raw features: Poor performance, slow computation
-   - With PCA (21 components): 99.91% accuracy, 10x faster
+Correlation heatmap revealing 50+ highly correlated feature pairs (r > 0.95) that were removed during preprocessing:
 
-3. **AdaBoost Superior for Imbalanced Data**
-   - Achieved near-perfect classification (99.95% accuracy)
-   - Naturally robust to class imbalance through adaptive boosting
-   - Best precision-recall trade-off
+![Correlation Heatmap](images/figures/corr_heatmap_subset.png)
 
-4. **Feature Engineering Impact**
-   - Removing 57 redundant features improved model interpretability
-   - Reduced overfitting risk
-   - Faster training and inference
+### Model Performance: Confusion Matrices
 
-### Business Impact
+#### AdaBoost (Best Model)
 
-In a production environment processing **1 million flows/day**:
-- **99.95% accuracy** → Only 500 misclassifications
-- **99.96% recall** → Detects 999,600 attacks (misses only 400)
-- **99.99% precision** → Only 100 false alarms
+<div align="center">
+  <img src="images/figures/confusion_AdaBoost_test.png" width="45%" />
+  <img src="images/figures/confusion_AdaBoost_val.png" width="45%" />
+</div>
 
-This performance level is suitable for real-world deployment in SOC/SIEM systems.
+**AdaBoost Test Results:**
+- True Positives: 98,899 (99.96%)
+- False Negatives: 43 (0.04%)
+- True Negatives: 11,443 (99.88%)
+- False Positives: 14 (0.12%)
+
+#### K-Nearest Neighbors + PCA
+
+<div align="center">
+  <img src="images/figures/confusion_KNN_test.png" width="45%" />
+  <img src="images/figures/confusion_KNN_val.png" width="45%" />
+</div>
+
+**KNN Test Results:**
+- True Positives: 98,899 (99.96%)
+- False Negatives: 43 (0.04%)
+- True Negatives: 11,402 (99.52%)
+- False Positives: 55 (0.48%)
+
+#### Random Forest (Threshold Optimization)
+
+**Threshold 0.5 (Default):**
+
+![RF Threshold 0.5](images/figures/confusion_RandomForest_test_0.5.png)
+
+- **Issue:** 690 false positives (6% benign traffic misclassified)
+- Accuracy: 94%
+
+**Threshold 0.3 (Optimized):**
+
+![RF Threshold 0.3](images/figures/confusion_RandomForest_test_0.3.png)
+
+- **Improvement:** Better balance, reduced false negatives
+- Accuracy: 96%
+
+**Threshold 0.1 (Maximum Recall):**
+
+![RF Threshold 0.1](images/figures/confusion_RandomForest_test_0.1.png)
+
+- **Optimal for Security:** 99.9% attack detection
+- Acceptable false positive rate for cybersecurity context
+
+### ROC Curves
+
+ROC curves demonstrate near-perfect classification performance across all models:
+
+#### AdaBoost
+
+<div align="center">
+  <img src="images/figures/roc_AdaBoost_test.png" width="45%" />
+  <img src="images/figures/roc_AdaBoost_val.png" width="45%" />
+</div>
+
+**AUC = 1.0000** (Perfect classification)
+
+#### K-Nearest Neighbors
+
+<div align="center">
+  <img src="images/figures/roc_KNN_test.png" width="45%" />
+  <img src="images/figures/roc_KNN_val.png" width="45%" />
+</div>
+
+**AUC = 0.9982** (Test) | **AUC = 0.9998** (Validation)
+
+#### Random Forest
+
+<div align="center">
+  <img src="images/figures/roc_RandomForest_test.png" width="45%" />
+  <img src="images/figures/roc_RandomForest_val.png" width="45%" />
+</div>
+
+**AUC = 0.9976** (Test) | **AUC = 1.0000** (Validation)
+
+### Key Takeaways from Visualizations
+
+1. **Severe Class Imbalance:** 90% DDoS vs 10% Benign requires specialized handling
+2. **High Feature Correlation:** 50+ pairs removed to reduce multicollinearity
+3. **Threshold Impact:** Random Forest performance improved from 94% → 99.3% with threshold tuning
+4. **Near-Perfect ROC:** All models achieve AUC > 0.99, indicating excellent discrimination
+5. **AdaBoost Superiority:** Best confusion matrix with minimal false negatives/positives
 
 ## 📚 Related Work
 
